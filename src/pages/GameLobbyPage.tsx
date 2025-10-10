@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
-import Header from '../components/Header';
 import { PlusCircle, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthProvider';
 
-// A simplified and more accurate type for our sessions
 type OpenGame = {
-  session_id: number;
+  game_id: number;
   turf_name: string;
   start_time: string;
   players_needed: number;
@@ -17,18 +15,14 @@ type OpenGame = {
 export default function GameLobbyPage() {
   const { sportId } = useParams<{ sportId: string }>();
   const { user } = useAuth();
-
   const [openGames, setOpenGames] = useState<OpenGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState<number | null>(null);
 
-  // This function is now more reliable for fetching games
   const fetchOpenGames = async () => {
     if (!sportId) return;
     setLoading(true);
-
     const { data, error } = await supabase.rpc('get_open_games_for_sport', { sport_name: sportId });
-
     if (error) {
       console.error("Error fetching open games:", error);
       setOpenGames([]);
@@ -42,29 +36,21 @@ export default function GameLobbyPage() {
     fetchOpenGames();
   }, [sportId]);
 
-  const handleJoinGame = async (sessionId: number) => {
-    if (!user) {
-      alert('You must be logged in to join a game.');
-      return;
-    }
-    setJoining(sessionId);
-
-    // Logic to join the game
-    const { error } = await supabase.from('matchmaking_players').insert({
-      session_id: sessionId,
-      player_id: user.id,
+  const handleJoinGame = async (gameId: number) => {
+    if (!user) return alert('You must be logged in to join a game.');
+    setJoining(gameId);
+    const { error: insertError } = await supabase.from('matchmaking_players').insert({
+        game_id: gameId,
+        player_id: user.id,
     });
-
-    if (error) {
-      if (error.code === '23505') { // Unique constraint violation
-        alert("You've already joined this game!");
-      } else {
-        alert('Failed to join the game. Please try again.');
-        console.error(error);
-      }
+    if (insertError) {
+        if (insertError.code === '23505') alert("You've already joined this game!");
+        else alert('Failed to join the game. Please try again.');
     } else {
-      alert('You have successfully joined the game!');
-      fetchOpenGames(); // Refresh the list
+        const { error: rpcError } = await supabase.rpc('trigger_payment_collection_if_full', { p_game_id: gameId });
+        if (rpcError) console.error("Error triggering payment collection:", rpcError);
+        alert('You have successfully joined the game!');
+        fetchOpenGames();
     }
     setJoining(null);
   };
@@ -72,60 +58,57 @@ export default function GameLobbyPage() {
   const sportTitle = sportId ? sportId.charAt(0).toUpperCase() + sportId.slice(1) : 'Games';
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div>
       <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-extrabold text-gray-900">{sportTitle} Lobby</h1>
+        <h1 className="text-4xl font-extrabold text-white">{sportTitle} Lobby</h1>
         
-        {/* Host or Join Options */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Link to={`/host-game/${sportId}`} className="block p-8 bg-blue-600 text-white rounded-2xl shadow-lg hover:bg-blue-700 transition">
+          <Link to={`/host-game/${sportId}`} className="block p-8 bg-brand-primary/80 backdrop-blur-sm text-white rounded-2xl shadow-lg hover:bg-brand-primary transition border border-blue-400/50">
             <PlusCircle size={40} />
             <h2 className="mt-4 text-2xl font-bold">Host a New Game</h2>
             <p className="mt-2">Choose a turf, set the time, and invite others to join your match.</p>
           </Link>
-          <div className="p-8 bg-white rounded-2xl shadow-lg">
-            <Users size={40} className="text-green-500" />
-            <h2 className="mt-4 text-2xl font-bold">Join an Existing Game</h2>
-            <p className="mt-2">Browse the list below to find a game that needs players.</p>
+          <div className="p-8 bg-brand-card/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-700/50">
+            <Users size={40} className="text-brand-accent" />
+            <h2 className="mt-4 text-2xl font-bold text-white">Join an Existing Game</h2>
+            <p className="mt-2 text-gray-300">Browse the list below to find a game that needs players.</p>
           </div>
         </div>
 
-        {/* List of Open Games */}
         <section className="mt-16">
-          <h2 className="text-3xl font-bold text-gray-900">Open Games</h2>
+          <h2 className="text-3xl font-bold text-white">Open Games</h2>
           <div className="mt-6">
             {loading ? (
-              <p>Loading open games...</p>
+              <p className="text-gray-300">Loading open games...</p>
             ) : openGames.length > 0 ? (
               <div className="space-y-4">
                 {openGames.map(game => (
-                  <Link to={`/match/${game.session_id}`} key={game.session_id} className="block">
-                    <div className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center hover:bg-gray-50 transition-colors">
+                  <Link to={`/match/${game.game_id}`} key={game.game_id} className="block">
+                    <div className="bg-brand-card/70 backdrop-blur-sm p-4 rounded-lg shadow-md flex justify-between items-center hover:bg-brand-card transition-colors border border-gray-700/50">
                       <div>
-                        <p className="font-bold text-lg">{game.turf_name}</p>
-                        <p className="text-gray-600">{new Date(game.start_time).toLocaleString()}</p>
+                        <p className="font-bold text-lg text-white">{game.turf_name}</p>
+                        <p className="text-gray-300">{new Date(game.start_time).toLocaleString()}</p>
                       </div>
                       <div className="text-center">
-                        <p className="font-semibold">{game.players_joined} / {game.players_needed}</p>
-                        <p className="text-sm text-gray-500">Players</p>
+                        <p className="font-semibold text-white">{game.players_joined} / {game.players_needed}</p>
+                        <p className="text-sm text-gray-400">Players</p>
                       </div>
                       <button
                         onClick={(e) => {
-                          e.preventDefault(); // This is important to stop the Link navigation
-                          handleJoinGame(game.session_id);
+                          e.preventDefault();
+                          handleJoinGame(game.game_id);
                         }}
-                        disabled={joining === game.session_id || game.players_joined >= game.players_needed}
+                        disabled={joining === game.game_id || game.players_joined >= game.players_needed}
                         className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-400 relative z-10"
                       >
-                        {joining === game.session_id ? 'Joining...' : game.players_joined >= game.players_needed ? 'Full' : 'Join Game'}
+                        {joining === game.game_id ? 'Joining...' : game.players_joined >= game.players_needed ? 'Full' : 'Commit to Join'}
                       </button>
                     </div>
                   </Link>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">No open {sportTitle} games right now. Why not host one?</p>
+              <p className="text-gray-400">No open {sportTitle} games right now. Why not host one?</p>
             )}
           </div>
         </section>

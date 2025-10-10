@@ -26,11 +26,11 @@ export default function DatePicker({ selectedDate, setSelectedDate }: Props) {
         <button
           key={date.toISOString()}
           onClick={() => setSelectedDate(date)}
-          className={`px-4 py-2 rounded-lg font-semibold text-sm transition
-            ${selectedDate.toDateString() === date.toDateString()
-              ? 'bg-blue-600 text-white shadow-md'
-              : 'bg-white hover:bg-gray-100'
-            }`}
+          className={`px-4 py-2 rounded-lg font-semibold text-sm transition text-white ${
+            selectedDate.toDateString() === date.toDateString()
+              ? 'bg-brand-primary shadow-md'
+              : 'bg-brand-card/70 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-700/50'
+          }`}
         >
           {formatDate(date)}
         </button>
@@ -38,4 +38,3 @@ export default function DatePicker({ selectedDate, setSelectedDate }: Props) {
     </div>
   );
 }
-

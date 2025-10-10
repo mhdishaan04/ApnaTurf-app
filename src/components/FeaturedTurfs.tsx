@@ -1,49 +1,85 @@
-import { Star } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { MapPin } from 'lucide-react';
 
-// Placeholder data - we'll replace this with real data later
-const featuredTurfs = [
-  {
-    name: 'Greenfield Sports',
-    location: 'Koramangala',
-    image: 'https://images.unsplash.com/photo-1526233139368-7d1c58c0c5b3?q=80&w=2070&auto=format&fit=crop',
-    rating: 4.8,
-  },
-  {
-    name: 'Urban Arena',
-    location: 'Indiranagar',
-    image: 'https://images.unsplash.com/photo-1551772633-22870135d56b?q=80&w=2070&auto=format&fit=crop',
-    rating: 4.6,
-  },
-  {
-    name: 'Skyline Football',
-    location: 'HSR Layout',
-    image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1935&auto=format&fit=crop',
-    rating: 4.9,
-  },
-];
+type FeaturedTurf = {
+  id: number;
+  name: string;
+  location: string;
+  images: string[];
+};
 
-export default function FeaturedTurfs() {
+// Define the type for the props
+type Props = {
+  containerVariants: any;
+  itemVariants: any;
+};
+
+export default function FeaturedTurfs({ containerVariants, itemVariants }: Props) {
+  const [turfs, setTurfs] = useState<FeaturedTurf[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedTurfs = async () => {
+      setLoading(true);
+      const { data, error } = await supabase.rpc('get_featured_turfs');
+      
+      if (error) {
+        console.error("Error fetching featured turfs:", error);
+      } else {
+        setTurfs(data as FeaturedTurf[]);
+      }
+      setLoading(false);
+    };
+    fetchFeaturedTurfs();
+  }, []);
+
   return (
-    <section className="bg-white py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-gray-900 text-center">Featured Turfs</h2>
-        <p className="mt-2 text-md text-gray-500 text-center">Explore some of the top-rated turfs on our platform.</p>
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {featuredTurfs.map((turf) => (
-            <div key={turf.name} className="bg-gray-50 rounded-lg shadow-md overflow-hidden">
-              <img src={turf.image} alt={turf.name} className="w-full h-48 object-cover" />
-              <div className="p-4">
-                <h3 className="font-bold">{turf.name}</h3>
-                <p className="text-sm text-gray-600">{turf.location}</p>
-                <div className="flex items-center mt-2">
-                  <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                  <span className="ml-1 text-gray-700 font-semibold">{turf.rating}</span>
-                </div>
-              </div>
+    <motion.section
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      className="py-20 px-4 bg-brand-dark"
+    >
+      <div className="max-w-7xl mx-auto">
+        <motion.h2 
+          variants={itemVariants}
+          className="text-4xl font-bold text-center text-white mb-12"
+        >
+          Featured Turfs
+        </motion.h2>
+
+        {loading ? (
+            <div className="text-center text-gray-400">Loading turfs...</div>
+        ) : turfs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {turfs.map((turf) => (
+                <motion.div
+                  key={turf.id}
+                  variants={itemVariants}
+                >
+                  <Link to={`/turf/${turf.id}`} className="block bg-brand-card rounded-lg shadow-lg overflow-hidden group border border-gray-800 h-full hover:border-brand-primary transition-colors">
+                      <div className="h-48 overflow-hidden">
+                      <img src={turf.images[0]} alt={turf.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      </div>
+                      <div className="p-4">
+                      <h3 className="font-bold text-white text-lg truncate">{turf.name}</h3>
+                      <p className="flex items-center text-sm text-gray-400 mt-1">
+                          <MapPin size={14} className="mr-2 flex-shrink-0" />
+                          {turf.location}
+                      </p>
+                      </div>
+                  </Link>
+                </motion.div>
+            ))}
             </div>
-          ))}
-        </div>
+        ) : (
+            <div className="text-center text-gray-500">No approved turfs are available yet.</div>
+        )}
       </div>
-    </section>
+    </motion.section>
   );
 }

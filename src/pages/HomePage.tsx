@@ -1,53 +1,101 @@
-import Header from '../components/Header';
-import Hero from '../components/Hero';
-import SportsGrid from '../components/SportsGrid';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import KeyFeatures from '../components/KeyFeatures';
 import FeaturedTurfs from '../components/FeaturedTurfs';
-import Footer from '../components/Footer'; // We use the new Footer component
+import SportsGrid from '../components/SportsGrid';
+
+// NEW testimonials array with your names and unique reviews
+const testimonials = [
+    { name: 'Zaid', role: 'Player', text: "Finally, an app that makes finding a last-minute game so easy. The matchmaking works surprisingly well!" },
+    { name: 'Lenson Glen Lasrado', role: 'Player', text: "Booked a turf for our corporate tournament. The process was incredibly smooth and the ground was in top condition." },
+    { name: 'Lionel', role: 'Player', text: "The user interface is clean and booking takes less than a minute. Love the variety of turfs available in my area." },
+    { name: 'Ishaan', role: 'Player', text: "Used it to host a 5-a-side game. Got all the players we needed in just a few hours. Fantastic platform!" },
+    { name: 'Muadh Ali', role: 'Player', text: "The quality of the turfs listed is consistently good. No more showing up to a poorly maintained ground. Great job!" },
+    { name: 'Prateek Shetty', role: 'Turf Owner', text: "Listing my property was straightforward and the admin approval was quick. I've seen a definite increase in bookings." },
+    { name: 'Joshua Dylan', role: 'Player', text: "Simple, fast, and reliable. Exactly what you need when you just want to get out and play." },
+];
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, scale: 1.1, y: 50 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: 'easeOut',
+    },
+  },
+};
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <Hero />
-
-      {/* Main content area */}
-      <div className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Choose Your Sport</h2>
-            <p className="mt-2 text-md text-gray-500">Select a sport to find or host a game.</p>
-          </div>
-          <div className="mt-10">
-            <SportsGrid />
-          </div>
-        </div>
-      </div>
-
-      <FeaturedTurfs />
-
-      {/* How it works section */}
-      <section className="py-16 bg-gray-50">
-         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-900">How It Works</h2>
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-12">
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">1. Find Your Game</h3>
-                <p className="mt-2 text-gray-600">Choose your favorite sport and browse available turfs or join a game hosted by others.</p>
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">2. Book Your Slot</h3>
-                <p className="mt-2 text-gray-600">Easily book a turf for your team or pay your share to join a matchmaking game.</p>
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">3. Connect & Play</h3>
-                <p className="mt-2 text-gray-600">Connect with your new teammates, get on the field, and enjoy the game!</p>
-              </div>
-            </div>
-         </div>
+    <>
+      <section className="relative h-screen flex items-center justify-center text-center overflow-hidden -mt-20">
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-black/50" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="relative z-10">
+          <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter">Unleash Your Inner Athlete</h1>
+          <p className="text-lg md:text-xl text-gray-300 mt-4">Book. Play. Conquer.</p>
+          <Link to="/games/football" className="mt-8 inline-block px-8 py-3 bg-brand-primary text-white font-bold rounded-lg text-lg hover:bg-blue-500 transition-colors">
+              Find a Game
+          </Link>
+        </motion.div>
       </section>
 
-      {/* Use the new Footer component */}
-      <Footer />
-    </div>
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        className="py-20 px-4 max-w-7xl mx-auto"
+      >
+        <motion.h2 variants={itemVariants} className="text-4xl font-bold text-center text-white mb-12">Choose Your Sport</motion.h2>
+        <SportsGrid itemVariants={itemVariants} />
+      </motion.section>
+
+      <KeyFeatures containerVariants={containerVariants} itemVariants={itemVariants} />
+      <FeaturedTurfs containerVariants={containerVariants} itemVariants={itemVariants} />
+
+      {/* Testimonials Section - UPDATED with Sliding Carousel */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="text-4xl font-bold text-center text-white mb-12"
+            >
+                Don't Just Take Our Word For It!
+            </motion.h2>
+
+            <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+                <div className="flex w-max animate-slide">
+                    {/* Render the testimonials twice for a seamless loop */}
+                    {[...testimonials, ...testimonials].map((t, i) => (
+                        <div key={i} className="w-[400px] flex-shrink-0 mx-4">
+                            <div className="bg-brand-card border border-gray-800 p-8 rounded-lg h-full">
+                                <p className="text-gray-400 italic">"{t.text}"</p>
+                                <div className="mt-6">
+                                    <p className="font-bold text-white">{t.name}</p>
+                                    <p className="text-sm text-gray-500">{t.role}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+      </section>
+    </>
   );
 }

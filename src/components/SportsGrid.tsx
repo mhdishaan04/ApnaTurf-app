@@ -1,17 +1,45 @@
+import { motion } from 'framer-motion';
 import SportCard from './SportCard';
 
 const SPORTS = [
-  { id: 'football', title: 'Football', subtitle: '5v5, 7v7', color: 'bg-gradient-to-br from-green-500 to-emerald-600' },
-  { id: 'cricket', title: 'Cricket', subtitle: 'Box Cricket', color: 'bg-gradient-to-br from-yellow-500 to-amber-600' },
-  { id: 'basketball', title: 'Basketball', subtitle: 'Full Court', color: 'bg-gradient-to-br from-orange-500 to-red-600' },
-  { id: 'badminton', title: 'Badminton', subtitle: 'Singles, Doubles', color: 'bg-gradient-to-br from-sky-500 to-indigo-600' },
+  {
+    id: 'football',
+    title: 'Football',
+    subtitle: '5v5, 7v7',
+    videoUrl: 'https://media.istockphoto.com/id/1426877619/video/football-championship-ball-hits-net-in-slow-motion-goalkeeper-jumps-and-fails-to-protect.mp4?s=mp4-640x640-is&k=20&c=BAuUaeRKUeI0UJ7bIrx6kt5LLkyIhSS1mB1aICSTjpY=',
+  },
+  {
+    id: 'cricket',
+    title: 'Cricket',
+    subtitle: 'Box Cricket',
+    videoUrl: 'https://media.istockphoto.com/id/683659992/video/cricket-player-on-professional-cricket-stadium.mp4?s=mp4-640x640-is&k=20&c=0ib4fuJAqVkr7QbwrUN2-2gEw_SGrKuXYTljXjJL7Qs=',
+  },
+  {
+    id: 'basketball',
+    title: 'Basketball',
+    subtitle: 'Full Court',
+    videoUrl: 'https://www.shutterstock.com/shutterstock/videos/3789167887/preview/stock-footage-ball-goes-in-basket-in-arena-a-basketball-player-performing-the-slam-dunk-basketball-going.webm',
+  },
+  {
+    id: 'badminton',
+    title: 'Badminton',
+    subtitle: 'Singles, Doubles',
+    videoUrl: 'https://www.shutterstock.com/shutterstock/videos/1044047854/preview/stock-footage-badminton-racket-hitting-shuttlecock-in-slow-motion.webm',
+  },
 ];
 
-export default function SportsGrid() {
+// Define the type for the props
+type Props = {
+  itemVariants: any;
+};
+
+export default function SportsGrid({ itemVariants }: Props) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       {SPORTS.map((s) => (
-        <SportCard key={s.id} sport={s} />
+        <motion.div key={s.id} variants={itemVariants}>
+          <SportCard sport={s} />
+        </motion.div>
       ))}
     </div>
   );

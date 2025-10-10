@@ -13,9 +13,6 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    // The sign-up call now includes the profile data.
-    // The database trigger will handle the rest automatically.
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -26,9 +23,7 @@ export default function RegisterPage() {
         }
       }
     });
-
     setLoading(false);
-
     if (error) {
       alert(error.message);
     } else {
@@ -38,21 +33,30 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full p-8 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold text-center mb-6">Create Your Account</h2>
+    <div className="relative min-h-screen flex items-center justify-center text-gray-200">
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        className="fixed top-0 left-0 w-full h-full object-cover -z-10 opacity-30"
+      >
+        <source src="https://cdn.pixabay.com/video/2023/02/28/152652-803732590_large.mp4" type="video/mp4" />
+      </video>
+      <div className="max-w-md w-full p-8 bg-brand-card/80 backdrop-blur-lg shadow-lg rounded-2xl border border-gray-700/50">
+        <h2 className="text-3xl font-bold text-center mb-6 text-white">Create Your Account</h2>
         <form onSubmit={handleRegister} className="space-y-4">
-          <input type="text" placeholder="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full p-2 border rounded" required />
-          <input type="tel" placeholder="Mobile Number" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} className="w-full p-2 border rounded" required />
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-2 border rounded" required />
-          <input type="password" placeholder="Password (at least 6 characters)" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border rounded" required />
-          <button type="submit" disabled={loading} className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700 disabled:opacity-50">
+          <input type="text" placeholder="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-brand-primary focus:border-brand-primary" required />
+          <input type="tel" placeholder="Mobile Number" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-brand-primary focus:border-brand-primary" required />
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-brand-primary focus:border-brand-primary" required />
+          <input type="password" placeholder="Password (at least 6 characters)" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-brand-primary focus:border-brand-primary" required />
+          <button type="submit" disabled={loading} className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 disabled:opacity-50 font-semibold transition-colors">
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
-        <p className="text-center text-sm mt-4">
+        <p className="text-center text-sm mt-6 text-gray-300">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline">Log In</Link>
+          <Link to="/login" className="text-brand-primary hover:underline font-semibold">Log In</Link>
         </p>
       </div>
     </div>
