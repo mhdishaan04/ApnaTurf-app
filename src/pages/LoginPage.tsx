@@ -10,13 +10,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % words.length);
-    }, 2000); // Change word every 2 seconds
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -34,21 +33,15 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center text-gray-200 p-4">
-      {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        className="fixed top-0 left-0 w-full h-full object-cover -z-10 opacity-30"
-      >
+      <video autoPlay loop muted className="fixed top-0 left-0 w-full h-full object-cover -z-10 opacity-30">
         <source src="https://cdn.pixabay.com/video/2023/02/28/152652-803732590_large.mp4" type="video/mp4" />
       </video>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center max-w-6xl mx-auto w-full">
         {/* Left Side: Branding and Animated Text */}
         <div className="text-center md:text-left">
-          <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter">ApnaTurf</h1>
-          <div className="mt-4 text-3xl md:text-5xl font-bold text-brand-primary h-16">
+          <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter">ApnaTurf</h1>
+          <div className="mt-4 text-3xl md:text-5xl font-bold text-brand-primary h-12 md:h-16">
             <motion.span
               key={words[index]}
               initial={{ opacity: 0, y: 20 }}
@@ -60,14 +53,14 @@ export default function LoginPage() {
               {words[index]}
             </motion.span>
           </div>
-          <p className="mt-4 text-lg text-gray-300">
+          <p className="mt-4 text-md md:text-lg text-gray-300">
             Your ultimate destination for booking sports turfs and connecting with players near you.
           </p>
         </div>
 
         {/* Right Side: Login Panel */}
-        <div className="w-full p-8 bg-brand-card/70 backdrop-blur-lg shadow-lg rounded-2xl border border-gray-700/50">
-          <h2 className="text-3xl font-bold text-center mb-6 text-white">Login</h2>
+        <div className="w-full p-6 md:p-8 bg-brand-card/70 backdrop-blur-lg shadow-lg rounded-2xl border border-gray-700/50">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 text-white">Login</h2>
           <form onSubmit={handleLogin} className="space-y-4">
             <input
               type="email"

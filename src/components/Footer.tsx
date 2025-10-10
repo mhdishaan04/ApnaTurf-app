@@ -4,11 +4,11 @@ import { Instagram, Facebook, Twitter } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="bg-[#0a0a0a] text-gray-400 py-12 px-4 border-t border-gray-800">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center sm:text-left">
+        <div className="sm:col-span-2 md:col-span-1">
           <h3 className="text-xl font-bold text-white">ApnaTurf</h3>
           <p className="mt-2 text-sm">Your go-to destination for booking turf grounds.</p>
-          <div className="flex space-x-4 mt-4">
+          <div className="flex space-x-4 mt-4 justify-center sm:justify-start">
             <a href="#" className="hover:text-white"><Instagram size={20}/></a>
             <a href="#" className="hover:text-white"><Facebook size={20}/></a>
             <a href="#" className="hover:text-white"><Twitter size={20}/></a>
@@ -25,19 +25,15 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold text-white">About</h4>
            <ul className="mt-4 space-y-2 text-sm">
-            {/* Corrected Links Start Here */}
             <li><Link to="/about" className="hover:text-white">About Us</Link></li>
             <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
-            {/* Corrected Links End Here */}
           </ul>
         </div>
         <div>
           <h4 className="font-semibold text-white">Legal</h4>
            <ul className="mt-4 space-y-2 text-sm">
-            {/* Corrected Links Start Here */}
             <li><Link to="/terms-of-service" className="hover:text-white">Terms of Service</Link></li>
             <li><Link to="/privacy-policy" className="hover:text-white">Privacy Policy</Link></li>
-            {/* Corrected Links End Here */}
           </ul>
         </div>
       </div>
