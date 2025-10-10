@@ -1,0 +1,13 @@
+# Netlify configuration file
+
+[build]
+  # This command is found in your package.json file
+  command = "npm run build"
+  # The directory Vite builds to (usually 'dist')
+  publish = "dist"
+
+# This is the magic rule that fixes the 404 error
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
